@@ -116,11 +116,7 @@ public class App {
              * insertar valores de forma segura y manejar conversiones de tipos
              * automaticamente, como string a varchar. 
              */
-            String sql = """
-            INSERT INTO Padrino 
-            (dni, nombre, apellido, fecha_nacimiento, tel_movil, tel_fijo, cod_postal, direccion, facebook, email) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """;
+            String sql = "INSERT INTO Padrino (dni, nombre, apellido, fecha_nacimiento, tel_movil, tel_fijo, cod_postal, direccion, facebook, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             try(PreparedStatement ps = conn.prepareStatement(sql)){
                 ps.setString(1,dni); // reemplazar el primer ? de sql por dni
@@ -155,9 +151,9 @@ public class App {
 	System.out.print("Ingrese el DNI del donante a eleminar: ");
 	String dni = scanner.nextLine();
 
-	String query = "DELETE FROM Padrino WHERE dni = ?"
+	String query = "DELETE FROM Padrino WHERE dni = ?";
 
-	try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	try (PreparedStatement ps = conn.prepareStatement(query)){
         	ps.setString(1, dni);
         	int filasAfectadas = ps.executeUpdate();
 
