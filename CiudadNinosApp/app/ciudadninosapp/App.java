@@ -148,57 +148,57 @@ public class App {
         
     	Scanner scanner = new Scanner(System.in);
 	
-	System.out.print("Ingrese el DNI del donante a eleminar: ");
-	String dni = scanner.nextLine();
+        System.out.print("Ingrese el DNI del donante a eleminar: ");
+        String dni = scanner.nextLine();
 
-	String query = "DELETE FROM Padrino WHERE dni = ?";
+        String query = "DELETE FROM Padrino WHERE dni = ?";
 
-	try (PreparedStatement ps = conn.prepareStatement(query)){
-        	ps.setString(1, dni);
-        	int filasAfectadas = ps.executeUpdate();
+        try (PreparedStatement ps = conn.prepareStatement(query)){
+                ps.setString(1, dni);
+                int filasAfectadas = ps.executeUpdate();
 
-        	if (filasAfectadas > 0) {
-            	System.out.println("Donante eliminado correctamente.");
-        	} else {
-            	System.out.println("No se encontró donante con ese DNI.");
-        	}
-    	} catch (SQLException e) {
-        	System.err.println("Error al eliminar donante: " + e.getMessage());
-    	}	
+                if (filasAfectadas > 0) {
+                    System.out.println("Donante eliminado correctamente.");
+                } else {
+                    System.out.println("No se encontró donante con ese DNI.");
+                }
+            } catch (SQLException e) {
+                System.err.println("Error al eliminar donante: " + e.getMessage());
+            }	
 
-	return;
-    }
+            return;
+            }
 
-    public static void listarPadrinosConProgramas(Connection conn) {
-        
-	String sql ="SELECT p.dni, p.nombre, p.apellido, a.nro_programa FROM Padrino p JOIN Aporte a ON p.dni = a.dni ORDER BY p.apellido, p.nombre, a.nro_programa";
-	
-	System.out.println("---------------------------------------------------------------------------------------------------");
-        System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
-        System.out.println(sql);
-        System.out.println("---------------------------------------------------------------------------------------------------");
-        System.out.println("---------------------------------------------------------------------------------------------------");
-        System.out.print("\n");
+            public static void listarPadrinosConProgramas(Connection conn) {
+                
+            String sql ="SELECT p.dni, p.nombre, p.apellido, a.nro_programa FROM Padrino p JOIN Aporte a ON p.dni = a.dni ORDER BY p.apellido, p.nombre, a.nro_programa";
+            
+            System.out.println("---------------------------------------------------------------------------------------------------");
+                System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
+                System.out.println(sql);
+                System.out.println("---------------------------------------------------------------------------------------------------");
+                System.out.println("---------------------------------------------------------------------------------------------------");
+                System.out.print("\n");
 
 
-   	try (Statement stmt = conn.createStatement();
-         	ResultSet rs = stmt.executeQuery(sql)) {
+            try (Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery(sql)) {
 
-        	System.out.println("DNI | Nombre | Apellido | Programa");
+                    System.out.println("DNI | Nombre | Apellido | Programa");
 
-        	while (rs.next()) {
-            		String dni = rs.getString("dni");
-            		String nombre = rs.getString("nombre");
-            		String apellido = rs.getString("apellido");
-            		String programa = rs.getString("nro_programa");
+                    while (rs.next()) {
+                            String dni = rs.getString("dni");
+                            String nombre = rs.getString("nombre");
+                            String apellido = rs.getString("apellido");
+                            String programa = rs.getString("nro_programa");
 
-            		System.out.printf("%s | %s | %s | %s%n", dni, nombre, apellido, programa);
-        	}
+                            System.out.printf("%s | %s | %s | %s%n", dni, nombre, apellido, programa);
+                    }
 
-    	} catch (SQLException e) {
-        	System.err.println("Error al listar padrinos con programas: " + e.getMessage());
-    	}    
-	return;
+                } catch (SQLException e) {
+                    System.err.println("Error al listar padrinos con programas: " + e.getMessage());
+                }    
+            return;
     }
 
     public static void mostrarTotalAportesPorPrograma(Connection conn) {
@@ -211,20 +211,22 @@ public class App {
             //Envía en query a la base de datos y almacena el resulatdo.
             ResultSet resultSet = statement.executeQuery(query);
 		
-	    System.out.println("---------------------------------------------------------------------------------------------------");
+	        System.out.println("---------------------------------------------------------------------------------------------------");
             System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
             System.out.println(query);
             System.out.println("---------------------------------------------------------------------------------------------------");
             System.out.println("---------------------------------------------------------------------------------------------------");
             System.out.print("\n");
 
+            
             // Muestra los resultados.
+            System.out.println("N° Programa | Total Aportes |");
             while(resultSet.next())
             {
-                System.out.print(" Número de Programa: " + resultSet.getString("nro_programa"));
-                System.out.print(" Total de aportes mensuales: " + resultSet.getString("total_aporte_mensual"));
-                System.out.print("\n ");
-                System.out.print("\n ");
+                String nro_programa = resultSet.getString("nro_programa");
+                String total_aportes = resultSet.getString("total_aporte_mensual");
+
+                System.out.printf("  %s       | %s%n", nro_programa, total_aportes);
             } 
         } catch (SQLException e) { 
             System.err.println("Error SQL al consultar el programa: " + e.getMessage());
@@ -254,13 +256,14 @@ public class App {
             System.out.print("\n");
 
             // Muestra los resultados.
+            System.out.println("DNI | Nombre | Apellido |");
             while(resultSet.next())
             {
-                System.out.print(" DNI del Donante: " + resultSet.getString("dni"));
-                System.out.print(" Nombre: " + resultSet.getString("p.nombre"));
-                System.out.print(" Apellido: " + resultSet.getString("p.apellido"));
-                System.out.print("\n ");
-                System.out.print("\n ");
+                String dni = resultSet.getString("dni");
+                String nombre = resultSet.getString("p.nombre");
+                String apellido = resultSet.getString("p.apellido");
+                
+                System.out.printf("  %s       | %s  | %s%n", dni, nombre, apellido);
             } 
         } catch (SQLException e) { 
             System.err.println("Error SQL al consultar el programa: " + e.getMessage());
@@ -300,45 +303,54 @@ public class App {
             ResultSet resultSet = statement.executeQuery(query);
             System.out.print("\n");
 	    
-	    System.out.println("---------------------------------------------------------------------------------------------------");
-	    System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
-	    System.out.println(query);
-	    System.out.println("---------------------------------------------------------------------------------------------------");
-	    System.out.println("---------------------------------------------------------------------------------------------------");
-	    System.out.print("\n");
+            System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
+            System.out.println(query);
+            System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.print("\n");
 
 
             // Muestra los resultados.
-            while(resultSet.next())
-            {
+            System.out.printf("%-10s | %-20s | %-10s | %-20s | %-20s | %-15s | %-20s\n","DNI", "Nombre Titular", "Tipo", "Tarjeta/CBU", "Cuenta/Tarjeta", "Banco", "Extra Info");
 
-                System.out.print(" DNI: " + resultSet.getString("a.dni"));
-                System.out.print(" Nombre del titular: " + resultSet.getString("m.nombre_titular"));
-                System.out.print("\n ");
-                String medio_de_pago = resultSet.getString("m.tipo_tarjeta");
-                switch(medio_de_pago){
-                    case "Credito":
-                        System.out.print(" Número de tarjeta de crédito: " + resultSet.getString("tc.nro_tarjeta"));
-                        System.out.print(" Nombre de tarjeta de crédito: " + resultSet.getString("tc.nombre_tarjeta"));
-                        System.out.print(" Fecha de vencimiento: " + resultSet.getString("tc.fecha_vencimiento"));
-                        break;
-                    case "Debito":
-                    case "Tranferencia":
-                        System.out.print(" CBU: " + resultSet.getString("dt.cbu"));
-                        System.out.print(" Número de Cuenta: " + resultSet.getString("dt.nro_cuenta"));
-                        System.out.print(" Sucursal de Banco: " + resultSet.getString("dt.sucursal_banco"));
-                        System.out.print(" Nombre de Banco: " + resultSet.getString("dt.nombre_banco"));
-                        System.out.print(" Tipo de Cuenta: " + resultSet.getString("dt.tipo_cuenta"));
-                        break;
+
+            while(resultSet.next()) {
+                String dni = resultSet.getString("dni");
+                String nombre = resultSet.getString("nombre_titular");
+                String tipo = resultSet.getString("tipo_tarjeta");
+
+                // Variables comunes
+                String tarjetaOCBU = "";
+                String cuentaOTarjeta = "";
+                String banco = "";
+                String extra = "";
+
+                if ("Credito".equalsIgnoreCase(tipo)) {
+                    tarjetaOCBU = resultSet.getString("nro_tarjeta");
+                    cuentaOTarjeta = resultSet.getString("nombre_tarjeta");
+                    extra = resultSet.getString("fecha_vencimiento");
+                } else if ("Debito".equalsIgnoreCase(tipo) || "Transferencia".equalsIgnoreCase(tipo)) {
+                    tarjetaOCBU = resultSet.getString("cbu");
+                    cuentaOTarjeta = resultSet.getString("nro_cuenta");
+                    banco = resultSet.getString("nombre_banco");
+                    extra = resultSet.getString("tipo_cuenta") + " / Sucursal: " + resultSet.getString("sucursal_banco");
                 }
-                System.out.print("\n ");
-                System.out.print("\n ");
-            } 
+
+                // Reemplaza nulls con cadena vacía
+                tarjetaOCBU = tarjetaOCBU != null ? tarjetaOCBU : "";
+                cuentaOTarjeta = cuentaOTarjeta != null ? cuentaOTarjeta : "";
+                banco = banco != null ? banco : "";
+                extra = extra != null ? extra : "";
+
+                System.out.printf("%-10s | %-20s | %-10s | %-20s | %-20s | %-15s | %-20s\n",
+                    dni, nombre, tipo, tarjetaOCBU, cuentaOTarjeta, banco, extra);
+            }
+
+
+            return;
         } catch (SQLException e) { 
             System.err.println("Error SQL al consultar el programa: " + e.getMessage());
         }
-
-        return;
     }
-
 }
