@@ -61,7 +61,8 @@ insert into Aporte
 values
     ('12345678', 22, 233.20, 'semestral', 1),
     ('34567890', 21, 33311.50, 'mensual', 2),
-    ('34567890', 3, 21000.00, 'mensual', 3);
+    ('34567890', 3, 21000.00, 'mensual', 3),
+    ('34567890', 11, 21566.00, 'mensual', 4);
 
 insert into Tarjeta_Credito (id_medio_pago, nro_tarjeta, nombre_tarjeta, fecha_vencimiento)
 values

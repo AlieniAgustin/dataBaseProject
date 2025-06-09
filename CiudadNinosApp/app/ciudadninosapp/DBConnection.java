@@ -17,7 +17,7 @@ public class DBConnection {
     private static final String url = "jdbc:mysql://localhost:3306/ciudadninosdb";// URL de la Base de Datos y servidor
     private static final String driver = "com.mysql.cj.jdbc.Driver";// URL del Driver
     private static final String username = "root"; // Nombre del usuario que hace la consulta en esta instancia
-    private static final String password = "1234"; // Contraseña del usuario que hace la consulta en esta instancia
+    private static final String password = "18022005"; // Contraseña del usuario que hace la consulta en esta instancia
 
     /**
      * Constructor privado para evitar que se creen instancias desde afuera.

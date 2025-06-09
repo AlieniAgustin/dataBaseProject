@@ -141,7 +141,7 @@ public class App {
             System.err.println("Formato de fecha incorrecto.");
         }
 
-        scanner.close();
+        
     }
 
     public static void eliminarDonante(Connection conn) {
@@ -172,6 +172,14 @@ public class App {
     public static void listarPadrinosConProgramas(Connection conn) {
         
 	String sql ="SELECT p.dni, p.nombre, p.apellido, a.nro_programa FROM Padrino p JOIN Aporte a ON p.dni = a.dni ORDER BY p.apellido, p.nombre, a.nro_programa";
+	
+	System.out.println("---------------------------------------------------------------------------------------------------");
+        System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
+        System.out.println(sql);
+        System.out.println("---------------------------------------------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------------------------------------------");
+        System.out.print("\n");
+
 
    	try (Statement stmt = conn.createStatement();
          	ResultSet rs = stmt.executeQuery(sql)) {
@@ -202,6 +210,13 @@ public class App {
 
             //Envía en query a la base de datos y almacena el resulatdo.
             ResultSet resultSet = statement.executeQuery(query);
+		
+	    System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
+            System.out.println(query);
+            System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.print("\n");
 
             // Muestra los resultados.
             while(resultSet.next())
@@ -229,8 +244,15 @@ public class App {
 
             //Envía en query a la base de datos y almacena el resulatdo.
             ResultSet resultSet = statement.executeQuery(query);
-            
             System.out.print("\n ");
+
+	    System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
+            System.out.println(query);
+            System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.print("\n");
+
             // Muestra los resultados.
             while(resultSet.next())
             {
@@ -276,7 +298,16 @@ public class App {
 
             //Envía en query a la base de datos y almacena el resulatdo.
             ResultSet resultSet = statement.executeQuery(query);
-            System.out.print("\n ");
+            System.out.print("\n");
+	    
+	    System.out.println("---------------------------------------------------------------------------------------------------");
+	    System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
+	    System.out.println(query);
+	    System.out.println("---------------------------------------------------------------------------------------------------");
+	    System.out.println("---------------------------------------------------------------------------------------------------");
+	    System.out.print("\n");
+
+
             // Muestra los resultados.
             while(resultSet.next())
             {
