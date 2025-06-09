@@ -2,59 +2,168 @@ package app.ciudadninosapp;
 
 // Java program to implement a simple JDBC application
 import java.sql.*;
+import java.util.Scanner;
 
 public class App {
 
     private static Connection connection;
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
+        Connection connection = DBConnection.getInstance();
 
-        String url = "jdbc:mysql://localhost:3306/ciudadninosdb";// URL de la Base de Datos
-        String driver = "com.mysql.cj.jdbc.Driver";// URL del Driver
-        String username = "root"; // Nombre del usuario que hace la consulta en esta instancia
-        String password = "1234"; // Contraseña del usuario que hace la consulta en esta instancia
-        
-        
-        // Intentamos establecer la conección con la base de datos
-        try {
-            Class.forName(driver); // Establecemoss el driver 
-            connection = DriverManager.getConnection( url, username, password);// Establecemos la conección
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+
+        do {
+            System.out.println("===== MENÚ PRINCIPAL =====");
+            System.out.println("1. Insertar padrino");
+            System.out.println("2. Eliminar un donante");
+            System.out.println("3. Listar padrinos con programas");
+            System.out.println("4. Total de aportes mensuales por programa");
+            System.out.println("5. Donantes que aportan a más de dos programas");
+            System.out.println("6. Donantes con aportes mensuales y medios de pago");
+            System.out.println("0. Salir");
+            System.out.print("Seleccione una opción: ");
             
-        }
-        catch (ClassNotFoundException e) {
-            System.err.println("No se encontró el JDBC Driver: "  + e.getMessage());
-        }
-        catch (SQLException e) {
-            System.err.println("SQL Error: " + e.getMessage());
-        }
+            opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar buffer
 
-        /**
-         * DATOS DE UNA CONSULTA GENERAL
-         */
-        String input = "INSERT INTO programa (nro_programa, descripcion, nombre) VALUES (2022, 'Centro de baile folklórico para la expresión infantil', 'Baile folklórico')";// Ejemplo Insert de alguna tabla
-        programaInsert(input);
+            switch (opcion) {
+                case 1:
+                    insertarPadrino(connection);
+                    break;
+                case 2:
+                    eliminarDonante(connection);
+                    break;
+                case 3:
+                    listarPadrinosConProgramas(connection);
+                    break;
+                case 4:
+                    mostrarTotalAportesPorPrograma(connection);
+                    break;
+                case 5:
+                    mostrarDonantesConMasDeDosProgramas(connection);
+                    break;
+                case 6:
+                    mostrarDonantesConMediosDePago(connection);
+                    break;
+                case 0:
+                    System.out.println("Saliendo del sistema...");
+                    break;
+                default:
+                    System.out.println("Opción inválida. Intente de nuevo.");
+            }
 
-        connection.close(); // Tengo duda de si haría falta esto al final
+            System.out.println();
+
+        } while (opcion != 0);
+
+        DBConnection.close(); // Cerrar conexion al final
+        scanner.close();
+        
     }
 
-    public static void programaInsert(String input){
-        // Intentamos un input
+
+    public static void insertarPadrino(Connection conn) {
+        Scanner scanner = new Scanner(System.in);
+
         try {
-            Statement st = connection.createStatement(); // Crea instancia de un statement
+            System.out.println("===== Insertar nuevo padrino =====");
 
-            int count = st.executeUpdate(input); // Ejecutar la consulta
+            System.out.print("Dni: ");
+            String dni = scanner.nextLine();
 
-            System.out.println("Número de filas afectadas por esta consulta: " + count); //debug
+            System.out.print("Nombre: ");
+            String nombre = scanner.nextLine();
 
-            // Cerrar la conección
-            st.close(); //cierra el statement
-            
-            System.out.println("Conección cerrada."); //debug
-            
+            System.out.print("Apellido: ");
+            String apellido = scanner.nextLine();
+
+            System.out.print("Fecha de nacimiento (AAAA-MM-DD): ");
+            String fechaNacimiento = scanner.nextLine();
+
+            System.out.print("Telefono movil: ");
+            String telMovil = scanner.nextLine();
+
+            System.out.print("Telefono fijo: ");
+            String telFijo = scanner.nextLine();
+
+            System.out.print("Codigo postal: ");
+            String codPostal = scanner.nextLine();
+
+            System.out.print("Direccion: ");
+            String direccion = scanner.nextLine();
+
+            System.out.print("Facebook: ");
+            String facebook = scanner.nextLine();
+
+            System.out.print("Email: ");
+            String email = scanner.nextLine();
+
+            // Validaciones para prevenir errores antes de llegar a la base de datos
+            if(dni.length() < 7){
+                System.out.println("Error: el DNI debe tener al menos 7 caracteres.");
+                return;
+            }
+
+            if(telMovil == telFijo){
+                System.out.println("Error: El telefono fijo no puede ser igual que el movil.");
+                return;
+            }
+
+            /**
+             * Los ? son placeholders. Se usan en PreparedStatement para
+             * insertar valores de forma segura y manejar conversiones de tipos
+             * automaticamente, como string a varchar. 
+             */
+            String sql = """
+            INSERT INTO Padrino 
+            (dni, nombre, apellido, fecha_nacimiento, tel_movil, tel_fijo, cod_postal, direccion, facebook, email) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """;
+
+            try(PreparedStatement ps = conn.prepareStatement(sql)){
+                ps.setString(1,dni); // reemplazar el primer ? de sql por dni
+                ps.setString(2,nombre); // reemplazar el segundo ? de sql por nombre
+                ps.setString(3,apellido); // reemplazar el tercer ? de sql por apellido
+                ps.setString(4,fechaNacimiento); 
+                ps.setString(5,telMovil); 
+                ps.setString(6,telFijo); 
+                ps.setString(7,codPostal);
+                ps.setString(8,direccion);
+                ps.setString(9,facebook); 
+                ps.setString(10,email); 
+
+                // Ejecuta la consulta SQL que se preparo con PreparedStatement. Es una sentencia insert.
+                int count = ps.executeUpdate();
+                System.out.println("Se inserto correctamente el padrino. Filas afectadas: " + count);
+            }
+ 
+        } catch (SQLException e) { // para errores que violan restricciones, como dni duplicado
+            System.err.println("Error SQL al insertar padrino: " + e.getMessage());
+        } catch (IllegalArgumentException e) { // para atrapar errores al convertir fechas
+            System.err.println("Formato de fecha incorrecto.");
         }
-        catch (SQLException e) {
-            System.err.println("SQL Error: " + e.getMessage());
-        }
+    }
+
+    public static void eliminarDonante(Connection conn) {
+        return;
+    }
+
+    public static void listarPadrinosConProgramas(Connection conn) {
+        return;
+    }
+
+    public static void mostrarTotalAportesPorPrograma(Connection conn) {
+        return;
+    }
+
+    public static void mostrarDonantesConMasDeDosProgramas(Connection conn) {
+        return;
+    }
+
+    public static void mostrarDonantesConMediosDePago(Connection conn) {
+        return;
     }
 
 }
