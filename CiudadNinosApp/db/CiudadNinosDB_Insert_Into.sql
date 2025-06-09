@@ -59,12 +59,9 @@ values
 insert into Aporte
     (dni, nro_programa, monto, frecuencia, id_medio_pago)
 values
-    ('87654321', 22, 233.20, 'semestral', 1),
-    ('87654321', 21, 500.20, 'mensual', 1),
-    ('34567890', 11, 15000.50, 'mensual', 2),
-    ('23456789', 17, 15000.50, 'semestral', 4),
+    ('12345678', 22, 233.20, 'semestral', 1),
+    ('34567890', 21, 33311.50, 'mensual', 2),
     ('34567890', 3, 21000.00, 'mensual', 3);
-
 
 insert into Tarjeta_Credito (id_medio_pago, nro_tarjeta, nombre_tarjeta, fecha_vencimiento)
 values
@@ -78,64 +75,5 @@ values
     (4, '0070123460000001234567', '00123456789', 'Banco Galicia', 'Sucursal Palermo', 'Cuenta corriente'),
     (5, '0720055530000000111122', '00098765432', 'Banco Santander', 'Sucursal Belgrano', 'Caja de ahorro'),
     (7, '2850590940099999999999', '00987654321', 'Banco Macro', 'Sucursal Córdoba', 'Cuenta corriente');
-
-
-/*Vistas Generales*/
-SELECT * from Padrino;
-SELECT * from Contacto;
-SELECT * from Donante;
-SELECT * from Programa;
-SELECT * from Medio_De_Pago;
-SELECT * from Aporte;
-SELECT * from Debito_o_Transferencia;
-SELECT * from Tarjeta_Credito;
-
-SELECT COUNT(*) FROM Aporte;
-
-
-
-/*Prueba trigger*/
-delete from Donante where dni = '12345678';
-
-/*Chequeo*/
-SELECT * from Donante;
-SELECT * from Auditoria_Donante;
-
-/*Devolver por cada programa, el total de aportes mensuales.*/
-SELECT nro_programa, SUM(monto) as total_aporte_mensual
-FROM Aporte 
-WHERE frecuencia = 'mensual'
-GROUP BY nro_programa;
-
-/*Devolver los donantes que aportan a más de dos programas.*/
-SELECT a.dni, p.nombre, p.apellido 
-FROM Aporte a 
-NATURAL JOIN Padrino p
-GROUP BY a.dni
-HAVING COUNT(DISTINCT a.nro_programa) > 2;
-
-/*Listado  de  Donantes  con  aportes  mensuales  y  los  datos  de  los  medios  de pago.*/
-SELECT 
-    a.dni,
-    m.nombre_titular,
-    m.tipo_tarjeta,
-    
-    -- Datos específicos de tarjeta de crédito
-    tc.nro_tarjeta,
-    tc.nombre_tarjeta,
-    tc.fecha_vencimiento,
-
-    -- Datos específicos de débito/transferencia
-    dt.cbu,
-    dt.nro_cuenta,
-    dt.nombre_banco,
-    dt.sucursal_banco,
-    dt.tipo_cuenta
-
-FROM Aporte a
-JOIN Medio_De_Pago m ON a.id_medio_pago = m.id_medio_pago
-LEFT JOIN Tarjeta_Credito tc ON m.id_medio_pago = tc.id_medio_pago
-LEFT JOIN Debito_o_Transferencia dt ON m.id_medio_pago = dt.id_medio_pago
-WHERE a.frecuencia = 'mensual';
 
 
