@@ -149,11 +149,52 @@ public class App {
     }
 
     public static void eliminarDonante(Connection conn) {
-        return;
+        
+    	Scanner scanner = new Scanner(System.in);
+	
+	System.out.print("Ingrese el DNI del donante a eleminar: ");
+	String dni = scanner.nextLine();
+
+	String query = "DELETE FROM Padrino WHERE dni = ?"
+
+	try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        	ps.setString(1, dni);
+        	int filasAfectadas = ps.executeUpdate();
+
+        	if (filasAfectadas > 0) {
+            	System.out.println("Donante eliminado correctamente.");
+        	} else {
+            	System.out.println("No se encontró donante con ese DNI.");
+        	}
+    	} catch (SQLException e) {
+        	System.err.println("Error al eliminar donante: " + e.getMessage());
+    	}	
+
+	return;
     }
 
     public static void listarPadrinosConProgramas(Connection conn) {
-        return;
+        
+	String sql ="SELECT p.dni, p.nombre, p.apellido, a.nro_programa FROM Padrino p JOIN Aporte a ON p.dni = a.dni ORDER BY p.apellido, p.nombre, a.nro_programa";
+
+   	try (Statement stmt = conn.createStatement();
+         	ResultSet rs = stmt.executeQuery(sql)) {
+
+        	System.out.println("DNI | Nombre | Apellido | Programa");
+
+        	while (rs.next()) {
+            		String dni = rs.getString("dni");
+            		String nombre = rs.getString("nombre");
+            		String apellido = rs.getString("apellido");
+            		String programa = rs.getString("nro_programa");
+
+            		System.out.printf("%s | %s | %s | %s%n", dni, nombre, apellido, programa);
+        	}
+
+    	} catch (SQLException e) {
+        	System.err.println("Error al listar padrinos con programas: " + e.getMessage());
+    	}    
+	return;
     }
 
     public static void mostrarTotalAportesPorPrograma(Connection conn) {
