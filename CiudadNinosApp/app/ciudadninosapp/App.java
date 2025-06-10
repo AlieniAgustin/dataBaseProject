@@ -182,7 +182,7 @@ public class App {
             System.out.print("\n");
         
             
-        if (!sql.isBlank()){
+        if (!sql.isEmpty()){
             try (Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -227,7 +227,7 @@ public class App {
             System.out.print("\n");
 
             // Muestra los resultados.
-            if (!query.isBlank()){
+            if (!query.isEmpty()){
                 System.out.println("N° Programa | Total Aportes |");
                 while(resultSet.next())
                 {
@@ -269,7 +269,7 @@ public class App {
 
             // Muestra los resultados.
             System.out.println("DNI | Nombre | Apellido |");
-            if (!query.isBlank()){
+            if (!query.isEmpty()){
                 while(resultSet.next())
                 {
                     String dni = resultSet.getString("dni");
@@ -328,7 +328,7 @@ public class App {
             System.out.print("\n");
 
 
-            if (!query.isBlank()){
+            if (!query.isEmpty()){
                 // Muestra los resultados.
                 System.out.printf("%-10s | %-20s | %-10s | %-20s | %-20s | %-15s | %-20s\n","DNI", "Nombre Titular", "Tipo", "Tarjeta/CBU", "Cuenta/Tarjeta", "Banco", "Extra Info");
     
