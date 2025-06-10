@@ -154,54 +154,62 @@ public class App {
         String query = "DELETE FROM Padrino WHERE dni = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(query)){
-                ps.setString(1, dni);
-                int filasAfectadas = ps.executeUpdate();
+            ps.setString(1, dni);
+            int filasAfectadas = ps.executeUpdate();
 
-                if (filasAfectadas > 0) {
-                    System.out.println("Donante eliminado correctamente.");
-                } else {
-                    System.out.println("No se encontró donante con ese DNI.");
-                }
-            } catch (SQLException e) {
-                System.err.println("Error al eliminar donante: " + e.getMessage());
-            }	
-
-            return;
+            if (filasAfectadas > 0) {
+                System.out.println("Donante eliminado correctamente.");
+            } else {
+                System.out.println("No se encontró donante con ese DNI.");
             }
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar donante: " + e.getMessage());
+        }	
 
-            public static void listarPadrinosConProgramas(Connection conn) {
-                
-            String sql ="SELECT p.dni, p.nombre, p.apellido, a.nro_programa FROM Padrino p JOIN Aporte a ON p.dni = a.dni ORDER BY p.apellido, p.nombre, a.nro_programa";
+        return;
+    }
+
+    public static void listarPadrinosConProgramas(Connection conn) {
+        System.out.println("----------------------------------- Padrinos cons sus Programas -----------------------------------");
             
+        String sql ="SELECT p.dni, p.nombre, p.apellido, a.nro_programa FROM Padrino p JOIN Aporte a ON p.dni = a.dni ORDER BY p.apellido, p.nombre, a.nro_programa";
+        
+        System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
+            System.out.println(sql);
             System.out.println("---------------------------------------------------------------------------------------------------");
-                System.out.println("----------------------------------------- Consulta En MySQL ---------------------------------------");
-                System.out.println(sql);
-                System.out.println("---------------------------------------------------------------------------------------------------");
-                System.out.println("---------------------------------------------------------------------------------------------------");
-                System.out.print("\n");
-
-
+            System.out.println("---------------------------------------------------------------------------------------------------");
+            System.out.print("\n");
+        
+            
+        if (!sql.isBlank()){
             try (Statement stmt = conn.createStatement();
-                    ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery(sql)) {
 
-                    System.out.println("DNI | Nombre | Apellido | Programa");
+                System.out.println("DNI | Nombre | Apellido | Programa");
 
-                    while (rs.next()) {
-                            String dni = rs.getString("dni");
-                            String nombre = rs.getString("nombre");
-                            String apellido = rs.getString("apellido");
-                            String programa = rs.getString("nro_programa");
+                while (rs.next()) {
+                        String dni = rs.getString("dni");
+                        String nombre = rs.getString("nombre");
+                        String apellido = rs.getString("apellido");
+                        String programa = rs.getString("nro_programa");
 
-                            System.out.printf("%s | %s | %s | %s%n", dni, nombre, apellido, programa);
-                    }
+                        System.out.printf("%s | %s | %s | %s%n", dni, nombre, apellido, programa);
+                }
 
-                } catch (SQLException e) {
-                    System.err.println("Error al listar padrinos con programas: " + e.getMessage());
-                }    
-            return;
+            } catch (SQLException e) {
+                System.err.println("Error al listar padrinos con programas: " + e.getMessage());
+            }    
+
+        }else{
+            System.out.println("No hay padrinos cargados en el sistema hasta el momento.");
+        }
+
+        return;
     }
 
     public static void mostrarTotalAportesPorPrograma(Connection conn) {
+        System.out.println("------------------------------ Programa y Total de Aportes Mensuales ------------------------------");
         try{
             Statement statement = conn.createStatement();
             String query = "SELECT nro_programa, SUM(monto) as total_aporte_mensual \n" + //
@@ -218,16 +226,19 @@ public class App {
             System.out.println("---------------------------------------------------------------------------------------------------");
             System.out.print("\n");
 
-            
             // Muestra los resultados.
-            System.out.println("N° Programa | Total Aportes |");
-            while(resultSet.next())
-            {
-                String nro_programa = resultSet.getString("nro_programa");
-                String total_aportes = resultSet.getString("total_aporte_mensual");
-
-                System.out.printf("  %s       | %s%n", nro_programa, total_aportes);
-            } 
+            if (!query.isBlank()){
+                System.out.println("N° Programa | Total Aportes |");
+                while(resultSet.next())
+                {
+                    String nro_programa = resultSet.getString("nro_programa");
+                    String total_aportes = resultSet.getString("total_aporte_mensual");
+    
+                    System.out.printf("  %s       | %s%n", nro_programa, total_aportes);
+                } 
+            }else{
+                System.out.println("No hay programas cargados con aportes mensuales hasta el momento.");
+            }
         } catch (SQLException e) { 
             System.err.println("Error SQL al consultar el programa: " + e.getMessage());
         }
@@ -236,6 +247,7 @@ public class App {
     }
 
     public static void mostrarDonantesConMasDeDosProgramas(Connection conn) {
+        System.out.println("---------------------------- Donantes con aportes a más de 2 Programas -----------------------------");
         try{
             Statement statement = conn.createStatement();
             String query = "SELECT a.dni, p.nombre, p.apellido \n" + //
@@ -257,22 +269,27 @@ public class App {
 
             // Muestra los resultados.
             System.out.println("DNI | Nombre | Apellido |");
-            while(resultSet.next())
-            {
-                String dni = resultSet.getString("dni");
-                String nombre = resultSet.getString("p.nombre");
-                String apellido = resultSet.getString("p.apellido");
-                
-                System.out.printf("  %s       | %s  | %s%n", dni, nombre, apellido);
-            } 
+            if (!query.isBlank()){
+                while(resultSet.next())
+                {
+                    String dni = resultSet.getString("dni");
+                    String nombre = resultSet.getString("p.nombre");
+                    String apellido = resultSet.getString("p.apellido");
+                    
+                    System.out.printf("  %s       | %s  | %s%n", dni, nombre, apellido);
+                } 
+            }else{
+                System.out.println("No existe un donante que haya aportado a más de dos programas hasta el momento.");
+            }
         } catch (SQLException e) { 
             System.err.println("Error SQL al consultar el programa: " + e.getMessage());
         }
-
+        
         return;
     }
-
+    
     public static void mostrarDonantesConMediosDePago(Connection conn) {
+        System.out.println("-----------------------  Donantes que aportaron mensualmente con sus medios de pago  -------------------------");
         try{
             Statement statement = conn.createStatement();
             String query = "SELECT \r\n" + //
@@ -311,41 +328,45 @@ public class App {
             System.out.print("\n");
 
 
-            // Muestra los resultados.
-            System.out.printf("%-10s | %-20s | %-10s | %-20s | %-20s | %-15s | %-20s\n","DNI", "Nombre Titular", "Tipo", "Tarjeta/CBU", "Cuenta/Tarjeta", "Banco", "Extra Info");
-
-
-            while(resultSet.next()) {
-                String dni = resultSet.getString("dni");
-                String nombre = resultSet.getString("nombre_titular");
-                String tipo = resultSet.getString("tipo_tarjeta");
-
-                // Variables comunes
-                String tarjetaOCBU = "";
-                String cuentaOTarjeta = "";
-                String banco = "";
-                String extra = "";
-
-                if ("Credito".equalsIgnoreCase(tipo)) {
-                    tarjetaOCBU = resultSet.getString("nro_tarjeta");
-                    cuentaOTarjeta = resultSet.getString("nombre_tarjeta");
-                    extra = resultSet.getString("fecha_vencimiento");
-                } else if ("Debito".equalsIgnoreCase(tipo) || "Transferencia".equalsIgnoreCase(tipo)) {
-                    tarjetaOCBU = resultSet.getString("cbu");
-                    cuentaOTarjeta = resultSet.getString("nro_cuenta");
-                    banco = resultSet.getString("nombre_banco");
-                    extra = resultSet.getString("tipo_cuenta") + " / Sucursal: " + resultSet.getString("sucursal_banco");
+            if (!query.isBlank()){
+                // Muestra los resultados.
+                System.out.printf("%-10s | %-20s | %-10s | %-20s | %-20s | %-15s | %-20s\n","DNI", "Nombre Titular", "Tipo", "Tarjeta/CBU", "Cuenta/Tarjeta", "Banco", "Extra Info");
+    
+    
+                while(resultSet.next()) {
+                    String dni = resultSet.getString("dni");
+                    String nombre = resultSet.getString("nombre_titular");
+                    String tipo = resultSet.getString("tipo_tarjeta");
+    
+                    // Variables comunes
+                    String tarjetaOCBU = "";
+                    String cuentaOTarjeta = "";
+                    String banco = "";
+                    String extra = "";
+    
+                    if ("Credito".equalsIgnoreCase(tipo)) {
+                        tarjetaOCBU = resultSet.getString("nro_tarjeta");
+                        cuentaOTarjeta = resultSet.getString("nombre_tarjeta");
+                        extra = resultSet.getString("fecha_vencimiento");
+                    } else if ("Debito".equalsIgnoreCase(tipo) || "Transferencia".equalsIgnoreCase(tipo)) {
+                        tarjetaOCBU = resultSet.getString("cbu");
+                        cuentaOTarjeta = resultSet.getString("nro_cuenta");
+                        banco = resultSet.getString("nombre_banco");
+                        extra = resultSet.getString("tipo_cuenta") + " / Sucursal: " + resultSet.getString("sucursal_banco");
+                    }
+    
+                    // Reemplaza nulls con cadena vacía
+                    tarjetaOCBU = tarjetaOCBU != null ? tarjetaOCBU : "";
+                    cuentaOTarjeta = cuentaOTarjeta != null ? cuentaOTarjeta : "";
+                    banco = banco != null ? banco : "";
+                    extra = extra != null ? extra : "";
+    
+                    System.out.printf("%-10s | %-20s | %-10s | %-20s | %-20s | %-15s | %-20s\n",
+                        dni, nombre, tipo, tarjetaOCBU, cuentaOTarjeta, banco, extra);
                 }
-
-                // Reemplaza nulls con cadena vacía
-                tarjetaOCBU = tarjetaOCBU != null ? tarjetaOCBU : "";
-                cuentaOTarjeta = cuentaOTarjeta != null ? cuentaOTarjeta : "";
-                banco = banco != null ? banco : "";
-                extra = extra != null ? extra : "";
-
-                System.out.printf("%-10s | %-20s | %-10s | %-20s | %-20s | %-15s | %-20s\n",
-                    dni, nombre, tipo, tarjetaOCBU, cuentaOTarjeta, banco, extra);
-            }
+            }else{
+                System.out.println("No hay donantes que hayan aportado mensualmente hasta el momento.");
+            }   
 
 
             return;
